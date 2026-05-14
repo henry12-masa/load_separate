@@ -4,246 +4,355 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>荷物仕分けゲーム</title>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8398161859137802"
+ crossorigin="anonymous"></script>
+
 <style>
-  body {
-    margin: 0;
-    font-family: sans-serif;
-    background: #f4f6f8;
-    text-align: center;
-  }
-
-  header {
-    background: #263238;
-    color: white;
-    padding: 18px;
-  }
-
-  .game {
-    max-width: 900px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.15);
-  }
-
-  .status {
-    display: flex;
-    justify-content: space-around;
-    font-size: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-
-  #package {
-    width: 160px;
-    height: 120px;
-    background: #c78b4b;
-    border: 4px solid #8d5a2b;
-    border-radius: 12px;
-    margin: 30px auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    font-weight: bold;
-    cursor: grab;
-    user-select: none;
-  }
-
-  .zones {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-top: 25px;
-  }
-
-  .zone {
-    padding: 25px 10px;
-    border: 3px dashed #999;
-    border-radius: 14px;
-    background: #eef2f3;
-    font-size: 20px;
-    font-weight: bold;
-  }
-
-  .zone.over {
-    background: #d7ffd9;
-    border-color: #2e7d32;
-  }
-
-  button {
-    margin-top: 20px;
-    padding: 12px 30px;
-    font-size: 18px;
-    border: none;
-    border-radius: 10px;
-    background: #1976d2;
-    color: white;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background: #0d47a1;
-  }
-
-  #message {
-    font-size: 22px;
-    font-weight: bold;
-    margin-top: 15px;
-    min-height: 30px;
-  }
-
-  .correct { color: green; }
-  .wrong { color: red; }
-
-  @media (max-width: 700px) {
-    .zones {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#eef3f7;
+  text-align:center;
+}
+header{
+  background:#263238;
+  color:white;
+  padding:18px;
+}
+.ad-box{
+  max-width:900px;
+  margin:15px auto;
+}
+.game{
+  max-width:950px;
+  margin:20px auto;
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+.status{
+  display:flex;
+  justify-content:space-around;
+  flex-wrap:wrap;
+  gap:10px;
+  font-size:20px;
+  font-weight:bold;
+}
+.package{
+  margin:25px auto;
+  width:260px;
+  min-height:150px;
+  background:#c98b4b;
+  border:5px solid #8a5728;
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 12px rgba(0,0,0,.2);
+}
+.package .icon{
+  font-size:44px;
+}
+.package .label{
+  font-size:22px;
+  font-weight:bold;
+  margin-top:8px;
+}
+.question{
+  font-size:22px;
+  font-weight:bold;
+  margin:20px 0;
+}
+.choices{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+.choice{
+  padding:20px 10px;
+  border:none;
+  border-radius:14px;
+  font-size:20px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#1976d2;
+  color:white;
+}
+.choice:hover{
+  background:#0d47a1;
+}
+.choice:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+#message{
+  min-height:35px;
+  margin-top:18px;
+  font-size:24px;
+  font-weight:bold;
+}
+.correct{color:green;}
+.wrong{color:red;}
+.restart{
+  margin-top:20px;
+  padding:12px 30px;
+  font-size:18px;
+  border:none;
+  border-radius:10px;
+  background:#333;
+  color:white;
+  cursor:pointer;
+}
+@media(max-width:700px){
+  .choices{grid-template-columns:1fr;}
+  .status{font-size:16px;}
+}
 </style>
 </head>
+
 <body>
 
 <header>
   <h1>📦 荷物仕分けゲーム</h1>
-  <p>荷物を正しい配送エリアに仕分けよう！</p>
+  <p>荷物の内容を見て、正しい仕分け先を選ぼう！</p>
 </header>
 
+<div class="ad-box">
+  <!-- チェス -->
+  <ins class="adsbygoogle"
+   style="display:block"
+   data-ad-client="ca-pub-8398161859137802"
+   data-ad-slot="5599163841"
+   data-ad-format="auto"
+   data-full-width-responsive="true"></ins>
+  <script>
+   (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
 <div class="game">
+
   <div class="status">
+    <div>問題：<span id="qnum">1</span> / <span id="total">100</span></div>
     <div>スコア：<span id="score">0</span></div>
-    <div>残り時間：<span id="time">60</span>秒</div>
     <div>ミス：<span id="miss">0</span></div>
   </div>
 
-  <div id="package" draggable="true">東京</div>
-
-  <div class="zones">
-    <div class="zone" data-area="関東">関東</div>
-    <div class="zone" data-area="関西">関西</div>
-    <div class="zone" data-area="九州">九州</div>
-    <div class="zone" data-area="北海道">北海道</div>
+  <div class="package">
+    <div class="icon">📦</div>
+    <div class="label" id="packageLabel">読み込み中</div>
   </div>
 
+  <div class="question" id="question"></div>
+
+  <div class="choices" id="choices"></div>
+
   <div id="message"></div>
-  <button onclick="restartGame()">もう一度遊ぶ</button>
+
+  <button class="restart" onclick="restartGame()">もう一度遊ぶ</button>
+
 </div>
 
 <script>
-const packages = [
-  { name: "東京", area: "関東" },
-  { name: "神奈川", area: "関東" },
-  { name: "千葉", area: "関東" },
-  { name: "埼玉", area: "関東" },
-  { name: "大阪", area: "関西" },
-  { name: "京都", area: "関西" },
-  { name: "兵庫", area: "関西" },
-  { name: "奈良", area: "関西" },
-  { name: "福岡", area: "九州" },
-  { name: "熊本", area: "九州" },
-  { name: "鹿児島", area: "九州" },
-  { name: "長崎", area: "九州" },
-  { name: "札幌", area: "北海道" },
-  { name: "函館", area: "北海道" },
-  { name: "旭川", area: "北海道" },
-  { name: "釧路", area: "北海道" }
+const quizData = [
+  { item:"東京行きの通常荷物", answer:"関東エリア", choices:["関東エリア","関西エリア","九州エリア","北海道エリア"] },
+  { item:"大阪行きの通常荷物", answer:"関西エリア", choices:["関東エリア","関西エリア","東北エリア","中部エリア"] },
+  { item:"福岡行きの通常荷物", answer:"九州エリア", choices:["北海道エリア","九州エリア","関西エリア","関東エリア"] },
+  { item:"札幌行きの通常荷物", answer:"北海道エリア", choices:["北海道エリア","東北エリア","中部エリア","関西エリア"] },
+  { item:"仙台行きの通常荷物", answer:"東北エリア", choices:["関東エリア","東北エリア","九州エリア","関西エリア"] },
+  { item:"名古屋行きの通常荷物", answer:"中部エリア", choices:["中部エリア","関西エリア","北海道エリア","九州エリア"] },
+  { item:"冷凍食品", answer:"冷凍便", choices:["通常便","冷蔵便","冷凍便","ワレモノ便"] },
+  { item:"生クリームケーキ", answer:"冷蔵便", choices:["通常便","冷蔵便","大型便","書類便"] },
+  { item:"ガラスのコップ", answer:"ワレモノ便", choices:["通常便","ワレモノ便","冷凍便","大型便"] },
+  { item:"テレビ", answer:"大型便", choices:["書類便","通常便","大型便","冷蔵便"] },
+
+  { item:"契約書", answer:"書類便", choices:["書類便","冷凍便","大型便","ワレモノ便"] },
+  { item:"花束", answer:"なまもの便", choices:["通常便","なまもの便","大型便","書類便"] },
+  { item:"ノートパソコン", answer:"精密機器便", choices:["冷凍便","精密機器便","通常便","大型便"] },
+  { item:"スマートフォン", answer:"精密機器便", choices:["精密機器便","冷蔵便","九州エリア","ワレモノ便"] },
+  { item:"お米30kg", answer:"重量物便", choices:["通常便","書類便","重量物便","冷凍便"] },
+  { item:"冷凍マグロ", answer:"冷凍便", choices:["冷蔵便","冷凍便","通常便","書類便"] },
+  { item:"牛乳", answer:"冷蔵便", choices:["通常便","冷蔵便","大型便","関東エリア"] },
+  { item:"陶器の皿", answer:"ワレモノ便", choices:["ワレモノ便","通常便","冷凍便","書類便"] },
+  { item:"ソファ", answer:"大型便", choices:["大型便","書類便","冷蔵便","関西エリア"] },
+  { item:"履歴書", answer:"書類便", choices:["冷凍便","書類便","大型便","なまもの便"] },
+
+  { item:"横浜行きの荷物", answer:"関東エリア", choices:["関東エリア","中部エリア","関西エリア","九州エリア"] },
+  { item:"京都行きの荷物", answer:"関西エリア", choices:["東北エリア","関西エリア","北海道エリア","関東エリア"] },
+  { item:"熊本行きの荷物", answer:"九州エリア", choices:["九州エリア","中部エリア","関西エリア","北海道エリア"] },
+  { item:"函館行きの荷物", answer:"北海道エリア", choices:["東北エリア","北海道エリア","関東エリア","九州エリア"] },
+  { item:"青森行きの荷物", answer:"東北エリア", choices:["東北エリア","関西エリア","中部エリア","九州エリア"] },
+  { item:"金沢行きの荷物", answer:"中部エリア", choices:["関東エリア","中部エリア","北海道エリア","九州エリア"] },
+  { item:"アイスクリーム", answer:"冷凍便", choices:["冷凍便","冷蔵便","通常便","書類便"] },
+  { item:"チーズ", answer:"冷蔵便", choices:["大型便","冷蔵便","通常便","ワレモノ便"] },
+  { item:"鏡", answer:"ワレモノ便", choices:["通常便","ワレモノ便","冷凍便","書類便"] },
+  { item:"ベッド", answer:"大型便", choices:["大型便","冷蔵便","書類便","なまもの便"] },
+
+  { item:"印鑑証明書", answer:"書類便", choices:["書類便","大型便","冷凍便","ワレモノ便"] },
+  { item:"観葉植物", answer:"なまもの便", choices:["通常便","なまもの便","冷凍便","精密機器便"] },
+  { item:"カメラ", answer:"精密機器便", choices:["通常便","精密機器便","冷蔵便","大型便"] },
+  { item:"ゲーム機", answer:"精密機器便", choices:["精密機器便","九州エリア","冷凍便","書類便"] },
+  { item:"鉄アレイ", answer:"重量物便", choices:["重量物便","書類便","冷蔵便","ワレモノ便"] },
+  { item:"冷凍餃子", answer:"冷凍便", choices:["通常便","冷凍便","書類便","大型便"] },
+  { item:"ヨーグルト", answer:"冷蔵便", choices:["冷蔵便","通常便","北海道エリア","大型便"] },
+  { item:"ワイングラス", answer:"ワレモノ便", choices:["ワレモノ便","冷凍便","通常便","大型便"] },
+  { item:"タンス", answer:"大型便", choices:["大型便","書類便","冷蔵便","通常便"] },
+  { item:"請求書", answer:"書類便", choices:["通常便","書類便","冷凍便","重量物便"] },
+
+  { item:"千葉行きの荷物", answer:"関東エリア", choices:["関東エリア","関西エリア","東北エリア","北海道エリア"] },
+  { item:"神戸行きの荷物", answer:"関西エリア", choices:["中部エリア","関西エリア","九州エリア","北海道エリア"] },
+  { item:"鹿児島行きの荷物", answer:"九州エリア", choices:["東北エリア","九州エリア","関東エリア","中部エリア"] },
+  { item:"旭川行きの荷物", answer:"北海道エリア", choices:["北海道エリア","中部エリア","関西エリア","九州エリア"] },
+  { item:"盛岡行きの荷物", answer:"東北エリア", choices:["関東エリア","東北エリア","九州エリア","中部エリア"] },
+  { item:"静岡行きの荷物", answer:"中部エリア", choices:["中部エリア","北海道エリア","関西エリア","九州エリア"] },
+  { item:"冷凍ピザ", answer:"冷凍便", choices:["冷凍便","冷蔵便","通常便","大型便"] },
+  { item:"ハム", answer:"冷蔵便", choices:["書類便","冷蔵便","通常便","ワレモノ便"] },
+  { item:"花瓶", answer:"ワレモノ便", choices:["大型便","ワレモノ便","通常便","冷凍便"] },
+  { item:"机", answer:"大型便", choices:["大型便","書類便","なまもの便","冷蔵便"] },
+
+  { item:"領収書", answer:"書類便", choices:["書類便","冷凍便","大型便","精密機器便"] },
+  { item:"野菜セット", answer:"なまもの便", choices:["通常便","なまもの便","書類便","大型便"] },
+  { item:"タブレット端末", answer:"精密機器便", choices:["冷蔵便","精密機器便","通常便","九州エリア"] },
+  { item:"プリンター", answer:"精密機器便", choices:["大型便","精密機器便","冷凍便","なまもの便"] },
+  { item:"ダンベルセット", answer:"重量物便", choices:["重量物便","書類便","冷蔵便","通常便"] },
+  { item:"冷凍ハンバーグ", answer:"冷凍便", choices:["冷凍便","冷蔵便","通常便","ワレモノ便"] },
+  { item:"生チョコ", answer:"冷蔵便", choices:["通常便","冷蔵便","大型便","書類便"] },
+  { item:"ガラス細工", answer:"ワレモノ便", choices:["ワレモノ便","通常便","冷凍便","重量物便"] },
+  { item:"冷蔵庫", answer:"大型便", choices:["書類便","大型便","冷凍便","関東エリア"] },
+  { item:"申込書", answer:"書類便", choices:["冷蔵便","書類便","大型便","ワレモノ便"] },
+
+  { item:"埼玉行きの荷物", answer:"関東エリア", choices:["関東エリア","中部エリア","九州エリア","北海道エリア"] },
+  { item:"奈良行きの荷物", answer:"関西エリア", choices:["関西エリア","東北エリア","関東エリア","九州エリア"] },
+  { item:"長崎行きの荷物", answer:"九州エリア", choices:["中部エリア","九州エリア","北海道エリア","関西エリア"] },
+  { item:"釧路行きの荷物", answer:"北海道エリア", choices:["北海道エリア","関東エリア","関西エリア","九州エリア"] },
+  { item:"秋田行きの荷物", answer:"東北エリア", choices:["関東エリア","東北エリア","中部エリア","九州エリア"] },
+  { item:"長野行きの荷物", answer:"中部エリア", choices:["中部エリア","関西エリア","北海道エリア","東北エリア"] },
+  { item:"冷凍うどん", answer:"冷凍便", choices:["冷凍便","通常便","書類便","大型便"] },
+  { item:"プリン", answer:"冷蔵便", choices:["冷蔵便","通常便","ワレモノ便","大型便"] },
+  { item:"陶器の置物", answer:"ワレモノ便", choices:["通常便","ワレモノ便","冷凍便","書類便"] },
+  { item:"洗濯機", answer:"大型便", choices:["大型便","書類便","冷蔵便","なまもの便"] },
+
+  { item:"保証書", answer:"書類便", choices:["書類便","重量物便","冷凍便","ワレモノ便"] },
+  { item:"果物ギフト", answer:"なまもの便", choices:["なまもの便","通常便","大型便","精密機器便"] },
+  { item:"腕時計", answer:"精密機器便", choices:["精密機器便","冷凍便","通常便","大型便"] },
+  { item:"外付けハードディスク", answer:"精密機器便", choices:["通常便","精密機器便","冷蔵便","九州エリア"] },
+  { item:"工具箱", answer:"重量物便", choices:["重量物便","書類便","冷蔵便","ワレモノ便"] },
+  { item:"冷凍からあげ", answer:"冷凍便", choices:["冷蔵便","冷凍便","大型便","通常便"] },
+  { item:"バター", answer:"冷蔵便", choices:["通常便","冷蔵便","書類便","大型便"] },
+  { item:"電球", answer:"ワレモノ便", choices:["ワレモノ便","通常便","冷凍便","重量物便"] },
+  { item:"本棚", answer:"大型便", choices:["大型便","冷蔵便","書類便","通常便"] },
+  { item:"見積書", answer:"書類便", choices:["冷凍便","書類便","大型便","ワレモノ便"] },
+
+  { item:"茨城行きの荷物", answer:"関東エリア", choices:["関東エリア","関西エリア","九州エリア","北海道エリア"] },
+  { item:"和歌山行きの荷物", answer:"関西エリア", choices:["中部エリア","関西エリア","東北エリア","関東エリア"] },
+  { item:"宮崎行きの荷物", answer:"九州エリア", choices:["九州エリア","北海道エリア","関東エリア","中部エリア"] },
+  { item:"小樽行きの荷物", answer:"北海道エリア", choices:["東北エリア","北海道エリア","関西エリア","九州エリア"] },
+  { item:"山形行きの荷物", answer:"東北エリア", choices:["東北エリア","中部エリア","関西エリア","関東エリア"] },
+  { item:"岐阜行きの荷物", answer:"中部エリア", choices:["関東エリア","中部エリア","九州エリア","北海道エリア"] },
+  { item:"冷凍エビ", answer:"冷凍便", choices:["冷凍便","冷蔵便","書類便","大型便"] },
+  { item:"生ハム", answer:"冷蔵便", choices:["通常便","冷蔵便","ワレモノ便","重量物便"] },
+  { item:"ガラス瓶", answer:"ワレモノ便", choices:["通常便","ワレモノ便","冷凍便","書類便"] },
+  { item:"マットレス", answer:"大型便", choices:["大型便","冷蔵便","書類便","通常便"] }
 ];
 
-let currentPackage = null;
+let questions = [];
+let currentIndex = 0;
 let score = 0;
 let miss = 0;
-let time = 60;
-let timer = null;
-let gameOver = false;
+let answered = false;
 
-const packageBox = document.getElementById("package");
+const packageLabel = document.getElementById("packageLabel");
+const questionEl = document.getElementById("question");
+const choicesEl = document.getElementById("choices");
+const messageEl = document.getElementById("message");
 const scoreEl = document.getElementById("score");
 const missEl = document.getElementById("miss");
-const timeEl = document.getElementById("time");
-const messageEl = document.getElementById("message");
-const zones = document.querySelectorAll(".zone");
+const qnumEl = document.getElementById("qnum");
+const totalEl = document.getElementById("total");
 
-function setPackage() {
-  currentPackage = packages[Math.floor(Math.random() * packages.length)];
-  packageBox.textContent = currentPackage.name;
+function shuffle(array){
+  return array.sort(() => Math.random() - 0.5);
 }
 
-packageBox.addEventListener("dragstart", e => {
-  if (gameOver) return;
-  e.dataTransfer.setData("text/plain", currentPackage.area);
-});
-
-zones.forEach(zone => {
-  zone.addEventListener("dragover", e => {
-    e.preventDefault();
-    zone.classList.add("over");
-  });
-
-  zone.addEventListener("dragleave", () => {
-    zone.classList.remove("over");
-  });
-
-  zone.addEventListener("drop", e => {
-    e.preventDefault();
-    zone.classList.remove("over");
-
-    if (gameOver) return;
-
-    const selectedArea = zone.dataset.area;
-
-    if (selectedArea === currentPackage.area) {
-      score += 10;
-      messageEl.textContent = "正解！仕分け成功！";
-      messageEl.className = "correct";
-    } else {
-      miss++;
-      messageEl.textContent = `ミス！正解は「${currentPackage.area}」`;
-      messageEl.className = "wrong";
-    }
-
-    scoreEl.textContent = score;
-    missEl.textContent = miss;
-
-    setPackage();
-  });
-});
-
-function startTimer() {
-  timer = setInterval(() => {
-    time--;
-    timeEl.textContent = time;
-
-    if (time <= 0) {
-      clearInterval(timer);
-      gameOver = true;
-      packageBox.textContent = "終了";
-      messageEl.textContent = `ゲーム終了！最終スコアは ${score} 点です`;
-      messageEl.className = "";
-    }
-  }, 1000);
-}
-
-function restartGame() {
-  clearInterval(timer);
+function startGame(){
+  questions = shuffle([...quizData]);
+  currentIndex = 0;
   score = 0;
   miss = 0;
-  time = 60;
-  gameOver = false;
+  answered = false;
 
+  totalEl.textContent = questions.length;
   scoreEl.textContent = score;
   missEl.textContent = miss;
-  timeEl.textContent = time;
+
+  showQuestion();
+}
+
+function showQuestion(){
+  answered = false;
   messageEl.textContent = "";
   messageEl.className = "";
 
-  setPackage();
-  startTimer();
+  if(currentIndex >= questions.length){
+    packageLabel.textContent = "終了";
+    questionEl.textContent = `ゲーム終了！スコアは ${score} 点です`;
+    choicesEl.innerHTML = "";
+    return;
+  }
+
+  const q = questions[currentIndex];
+
+  qnumEl.textContent = currentIndex + 1;
+  packageLabel.textContent = q.item;
+  questionEl.textContent = "この荷物はどこに仕分ける？";
+
+  choicesEl.innerHTML = "";
+
+  q.choices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.textContent = choice;
+    btn.onclick = () => checkAnswer(choice);
+    choicesEl.appendChild(btn);
+  });
 }
 
-setPackage();
-startTimer();
+function checkAnswer(choice){
+  if(answered) return;
+  answered = true;
+
+  const q = questions[currentIndex];
+  const buttons = document.querySelectorAll(".choice");
+
+  buttons.forEach(btn => btn.disabled = true);
+
+  if(choice === q.answer){
+    score += 10;
+    messageEl.textContent = "✅ 正解！次の荷物へ進みます";
+    messageEl.className = "correct";
+  }else{
+    miss++;
+    messageEl.textContent = `❌ ミス！正解は「${q.answer}」`;
+    messageEl.className = "wrong";
+  }
+
+  scoreEl.textContent = score;
+  missEl.textContent = miss;
+
+  setTimeout(() => {
+    currentIndex++;
+    showQuestion();
+  }, 900);
+}
+
+function restartGame(){
+  startGame();
+}
+
+startGame();
 </script>
 
 </body>
