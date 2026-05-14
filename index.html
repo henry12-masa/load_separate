@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>荷物仕分けゲーム</title>
+<style>
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #f4f6f8;
+    text-align: center;
+  }
+
+  header {
+    background: #263238;
+    color: white;
+    padding: 18px;
+  }
+
+  .game {
+    max-width: 900px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+
+  .status {
+    display: flex;
+    justify-content: space-around;
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  #package {
+    width: 160px;
+    height: 120px;
+    background: #c78b4b;
+    border: 4px solid #8d5a2b;
+    border-radius: 12px;
+    margin: 30px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .zones {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 25px;
+  }
+
+  .zone {
+    padding: 25px 10px;
+    border: 3px dashed #999;
+    border-radius: 14px;
+    background: #eef2f3;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .zone.over {
+    background: #d7ffd9;
+    border-color: #2e7d32;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 12px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #1976d2;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #0d47a1;
+  }
+
+  #message {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 15px;
+    min-height: 30px;
+  }
+
+  .correct { color: green; }
+  .wrong { color: red; }
+
+  @media (max-width: 700px) {
+    .zones {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📦 荷物仕分けゲーム</h1>
+  <p>荷物を正しい配送エリアに仕分けよう！</p>
+</header>
+
+<div class="game">
+  <div class="status">
+    <div>スコア：<span id="score">0</span></div>
+    <div>残り時間：<span id="time">60</span>秒</div>
+    <div>ミス：<span id="miss">0</span></div>
+  </div>
+
+  <div id="package" draggable="true">東京</div>
+
+  <div class="zones">
+    <div class="zone" data-area="関東">関東</div>
+    <div class="zone" data-area="関西">関西</div>
+    <div class="zone" data-area="九州">九州</div>
+    <div class="zone" data-area="北海道">北海道</div>
+  </div>
+
+  <div id="message"></div>
+  <button onclick="restartGame()">もう一度遊ぶ</button>
+</div>
+
+<script>
+const packages = [
+  { name: "東京", area: "関東" },
+  { name: "神奈川", area: "関東" },
+  { name: "千葉", area: "関東" },
+  { name: "埼玉", area: "関東" },
+  { name: "大阪", area: "関西" },
+  { name: "京都", area: "関西" },
+  { name: "兵庫", area: "関西" },
+  { name: "奈良", area: "関西" },
+  { name: "福岡", area: "九州" },
+  { name: "熊本", area: "九州" },
+  { name: "鹿児島", area: "九州" },
+  { name: "長崎", area: "九州" },
+  { name: "札幌", area: "北海道" },
+  { name: "函館", area: "北海道" },
+  { name: "旭川", area: "北海道" },
+  { name: "釧路", area: "北海道" }
+];
+
+let currentPackage = null;
+let score = 0;
+let miss = 0;
+let time = 60;
+let timer = null;
+let gameOver = false;
+
+const packageBox = document.getElementById("package");
+const scoreEl = document.getElementById("score");
+const missEl = document.getElementById("miss");
+const timeEl = document.getElementById("time");
+const messageEl = document.getElementById("message");
+const zones = document.querySelectorAll(".zone");
+
+function setPackage() {
+  currentPackage = packages[Math.floor(Math.random() * packages.length)];
+  packageBox.textContent = currentPackage.name;
+}
+
+packageBox.addEventListener("dragstart", e => {
+  if (gameOver) return;
+  e.dataTransfer.setData("text/plain", currentPackage.area);
+});
+
+zones.forEach(zone => {
+  zone.addEventListener("dragover", e => {
+    e.preventDefault();
+    zone.classList.add("over");
+  });
+
+  zone.addEventListener("dragleave", () => {
+    zone.classList.remove("over");
+  });
+
+  zone.addEventListener("drop", e => {
+    e.preventDefault();
+    zone.classList.remove("over");
+
+    if (gameOver) return;
+
+    const selectedArea = zone.dataset.area;
+
+    if (selectedArea === currentPackage.area) {
+      score += 10;
+      messageEl.textContent = "正解！仕分け成功！";
+      messageEl.className = "correct";
+    } else {
+      miss++;
+      messageEl.textContent = `ミス！正解は「${currentPackage.area}」`;
+      messageEl.className = "wrong";
+    }
+
+    scoreEl.textContent = score;
+    missEl.textContent = miss;
+
+    setPackage();
+  });
+});
+
+function startTimer() {
+  timer = setInterval(() => {
+    time--;
+    timeEl.textContent = time;
+
+    if (time <= 0) {
+      clearInterval(timer);
+      gameOver = true;
+      packageBox.textContent = "終了";
+      messageEl.textContent = `ゲーム終了！最終スコアは ${score} 点です`;
+      messageEl.className = "";
+    }
+  }, 1000);
+}
+
+function restartGame() {
+  clearInterval(timer);
+  score = 0;
+  miss = 0;
+  time = 60;
+  gameOver = false;
+
+  scoreEl.textContent = score;
+  missEl.textContent = miss;
+  timeEl.textContent = time;
+  messageEl.textContent = "";
+  messageEl.className = "";
+
+  setPackage();
+  startTimer();
+}
+
+setPackage();
+startTimer();
+</script>
+
+</body>
+</html>
